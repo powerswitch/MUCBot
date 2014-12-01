@@ -1,0 +1,10 @@
+[credentials]
+    username = user@jabber.server.local
+    password = secret
+
+[chat]
+    nickname = user_bot
+    chatroom = room@conference.jabber.server.local
+
+[bot]
+    tojid = your@jabber.account.local
