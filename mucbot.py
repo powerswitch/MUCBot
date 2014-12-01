@@ -23,27 +23,27 @@ def messageCB(session,message):
     """
     handle messages
     """
-    if !message.getBody():
+    if not message.getBody():
         return # abort on empty message
     
     frm = message.getFrom()
     if frm.getNode()+"@"+frm.getDomain() == chatroom:
         # Message from chatroom
-        msg = Message(
+        msg = xmpp.Message(
             to=tojid,
             body=escape(frm.getResource()+": "+message.getBody()),
             typ="chat",
             frm=username
         )
-        cl.send(msg)
+        client.send(msg)
     else:
-        msg = Message(
+        msg = xmpp.Message(
             to=chatroom,
             body=escape(message.getBody()),
             typ="groupchat",
             frm=username
         )
-        cl.send(msg)
+        client.send(msg)
 
 # load config
 conf = ConfigObj("config.ini")
@@ -73,7 +73,7 @@ if not auth:
     print("Unable to authorize on {} - check login/password. Aborting!".format(server))
     sys.exit(1)
 
-if authres != 'sasl':
+if auth != 'sasl':
     print("Warning: unable to perform SASL auth os {}. Old authentication method used!".format(server))
 
 # register message handler
@@ -84,10 +84,10 @@ client.RegisterHandler('message',messageCB)
 client.sendInitPresence()
 
 # connect to muc
-p=Presence(to='{}/{}'.format(chatroom,nickname))
-p.setTag('x',namespace=NS_MUC).setTagData('password','')
-p.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
-cl.send(p)
+muc = xmpp.Presence(to='{}/{}'.format(chatroom,nickname))
+muc.setTag('x', namespace=xmpp.NS_MUC).setTagData('password','')
+muc.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
+client.send(muc)
 
 print("Bot started.")
 while 1:
