@@ -29,10 +29,18 @@ def messageCB(session,message):
     frm = message.getFrom()
     if frm.getNode()+"@"+frm.getDomain() == chatroom:
         # Message from chatroom
-        msg = xmpp.Message(
+        #msg = xmpp.Message(
+        #    to=tojid,
+        #    body=escape(frm.getResource()+": "+message.getBody()),
+        #    typ="chat",
+        #    frm=username
+        #) # Jolla XMPP would receive this
+        msg = """<message from='{frm}' to='{to}' type='chat' id='e7e65551-2215-4a8d-8711-917980dda53f'>
+<body>{body} </body>
+<active xmlns='http://jabber.org/protocol/chatstates'/>
+</message> """.format(
             to=tojid,
             body=escape(frm.getResource()+": "+message.getBody()),
-            typ="chat",
             frm=username
         )
         client.send(msg)
