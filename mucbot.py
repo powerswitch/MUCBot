@@ -25,25 +25,26 @@ def messageCB(session,message):
     """
     if not message.getBody():
         return # abort on empty message
-    
+
     frm = message.getFrom()
     if frm.getNode()+"@"+frm.getDomain() == chatroom:
-        # Message from chatroom
-        #msg = xmpp.Message(
-        #    to=tojid,
-        #    body=escape(frm.getResource()+": "+message.getBody()),
-        #    typ="chat",
-        #    frm=username
-        #) # Jolla XMPP would receive this
-        msg = """<message from='{frm}' to='{to}' type='chat' id='e7e65551-2215-4a8d-8711-917980dda53f'>
-<body>{body} </body>
-<active xmlns='http://jabber.org/protocol/chatstates'/>
-</message> """.format(
-            to=tojid,
-            body=escape(frm.getResource()+": "+message.getBody()),
-            frm=username
-        )
-        client.send(msg)
+        if not frm.getResource() == nickname:
+            # Message from chatroom
+            #msg = xmpp.Message(
+            #    to=tojid,
+            #    body=escape(frm.getResource()+": "+message.getBody()),
+            #    typ="chat",
+            #    frm=username
+            #) # Jolla XMPP would receive this
+            msg = u"""<message from='{frm}' to='{to}' type='chat' id='e7e65551-2215-4a8d-8711-917980dda53f'>
+    <body>{body} </body>
+    <active xmlns='http://jabber.org/protocol/chatstates'/>
+    </message> """.format(
+                to=tojid,
+                body=escape(frm.getResource()+": "+message.getBody()),
+                frm=username
+            )
+            client.send(msg)
     else:
         msg = xmpp.Message(
             to=chatroom,
@@ -66,7 +67,7 @@ botjid      = conf["bot"]
 tojid       = botjid["tojid"]
 
 # Create XMPP client and connect
-client = xmpp.Client(xmpp.JID(username).getDomain())
+client = xmpp.Client(xmpp.JID(username).getDomain(), dbug=[])
 connection = client.connect()
 
 if not connection:
@@ -75,7 +76,7 @@ if not connection:
 
 if connection != "tls":
     print("Warning: unable to estabilish secure connection - TLS failed!")
-    
+
 auth = client.auth(xmpp.JID(username).getNode(), password)
 if not auth:
     print("Unable to authorize on {} - check login/password. Aborting!".format(server))
@@ -87,7 +88,7 @@ if auth != 'sasl':
 # register message handler
 client.RegisterHandler('message',messageCB)
 #client.RegisterHandler('presence',presenceCB)
-    
+
 # init
 client.sendInitPresence()
 
