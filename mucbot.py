@@ -65,9 +65,13 @@ nickname    = chat["nickname"]
 chatroom    = chat["chatroom"]
 botjid      = conf["bot"]
 tojid       = botjid["tojid"]
+if "password" in chat:
+    roompasswd = chat["password"]
+else:
+    roompasswd = ''
 
 # Create XMPP client and connect
-client = xmpp.Client(xmpp.JID(username).getDomain(), dbug=[])
+client = xmpp.Client(xmpp.JID(username).getDomain())
 connection = client.connect()
 
 if not connection:
@@ -94,7 +98,7 @@ client.sendInitPresence()
 
 # connect to muc
 muc = xmpp.Presence(to='{}/{}'.format(chatroom,nickname))
-muc.setTag('x', namespace=xmpp.NS_MUC).setTagData('password','')
+muc.setTag('x', namespace=xmpp.NS_MUC).setTagData('password',roompasswd)
 muc.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
 client.send(muc)
 
